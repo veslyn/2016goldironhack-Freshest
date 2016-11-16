@@ -1,0 +1,765 @@
+<!DOCTYPE HTML>
+<html>
+	<head>
+		<title>Freshest</title>
+		<meta charset="utf-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1" />
+		<link rel="stylesheet" href="assets/css/main.css" />
+		<style>
+		      body, html{
+        height: 100%;
+        width: 100%;
+      }
+
+      #map {
+        width: 100%;
+        height: 100%;
+        float:left;
+        border: 15px solid rgba(255, 255, 255, .5);
+      }
+
+
+      /*Search box*/
+      .controls {
+        margin-top: 10px;
+        border: 1px solid transparent;
+        border-radius: 2px 0 0 2px;
+        box-sizing: border-box;
+        -moz-box-sizing: border-box;
+        height: 30px;
+        outline: none;
+        box-shadow: 0 2px 6px rgba(0, 0, 0, 0.3);
+      }
+
+      #pac-input {
+        background-color: #fff;
+        font-family: Roboto;
+        font-size: 15px;
+        font-weight: 300;
+        margin-left: 12px;
+        margin-top: 16px;
+        margin-bottom: 15px;
+        padding: 0 11px 0 13px;
+        text-overflow: ellipsis;
+        width: 85%;
+      }
+
+      #pac-input:focus {
+        border-color: #4d90fe;
+      }
+
+      .pac-container {
+        font-family: Roboto;
+      }
+
+      #type-selector {
+        color: #fff;
+        background-color: #4d90fe;
+        padding: 5px 11px 0px 11px;
+      }
+
+      #type-selector label {
+        font-family: Roboto;
+        font-size: 13px;
+        font-weight: 300;
+      }
+      #target {
+        width: 345px;
+      }
+
+
+
+
+
+
+
+      /*Side Navigation*/
+     #over_map {
+		position:absolute;
+		background: rgba(225, 225, 225, .0);
+        width: 25%;
+        height: 70%;
+        margin-top: 6em;
+        margin-left: 0.7em;
+        float:left;
+      }
+
+      .sidenav {
+	    height: 90%;
+	    width: 0;
+	    position: relative;
+	    z-index: 1;
+	    top: 0;
+	    left: 0;
+	    background-color: rgba(255,255,255,0.99);
+	    overflow-x: hidden;
+	    transition: 0.5s;
+	    padding-top: 50px;
+
+	    text-align:center;
+
+	}
+
+	.sidenav a {
+	    padding: 8px 8px 8px 32px;
+	    text-decoration: none;
+	    font-size: 25px;
+	    color: #818181;
+	    display: block;
+	    transition: 0.3s
+
+	}
+
+	.sidenav a:hover{
+	    color: #f1f1f1;
+	}
+
+	.sidenav .closebtn {
+	    position: absolute;
+	    top: 0;
+	    right: 15px;
+	    font-size: 30px;
+	}
+
+	@media screen and (max-height: 450px) {
+	  .sidenav {padding-top: 15px;}
+	  .sidenav a {font-size: 18px;}
+	}
+
+
+
+      /*season chart*/
+      #marketinfo{
+        width: 57%;
+        height: 21em;
+        background-image: url("images/board.png");
+        background-size: 100% 100%;
+
+
+      }
+      #center {
+	    margin-left: 10%;
+	    margin-top: 5%; 
+	    width: 80%;
+	    text-align: center;
+	    font-size: 17px;
+	    word-wrap: break-word;
+	}
+      #marketchart{
+      	font-family: "Source Sans Pro", Helvetica, sans-serif;
+      	font-size: 15px;
+      	font-weight: 400;
+        width: 40%;
+        height: 45%;
+      }
+
+
+
+		</style>
+	</head>
+	<body>
+		<header id="header" class="alt">
+			<div class="inner">
+				<h1>Freshest</h1>
+				<p>Help you find cheap and fresh veggies</p>
+			</div>
+		</header>
+
+	    <div id="wrapper" style="height: 120%;">
+
+          <div id="map"></div>
+<!--          <div id="freshness" style="background-color: rgba(255,255,255,0.6);width:30%;height:60%;position:absolute;margin-top:10%;margin-right:5%;margin-right:5%;">
+      </div>-->
+
+
+          <div title="Switch to my current location" id="currentLoc" style="position:absolute;margin-right:10%;float:right;background-image: url(images/goToCurrent.png);background-size:100% 100%;width:34px;height:34px;margin-left: 120px;margin-top: 25px;cursor: pointer;border:4px solid rgba(255,255,255,1.0)" onclick="getCurrentLoc()"></div>
+          <div id="over_map">
+          <div style="font-size:30px;font-weight:300;background:rgba(255,255,255,.99);cursor:pointer;margin-left: 0%;height:10%" onclick="openNav()">&#9776; Search for...</div>
+
+
+           <!-- Side Navigation-->
+      <div id="mySidenav" class="sidenav">
+			  <a href="javascript:void(0)" class="closebtn" onclick="closeNav()">&times;</a>
+			  <input id="pac-input" class="controls" type="text" placeholder="Search Box">
+			  <a href="javascript:void(0)" onclick="searchByKeyword('market')">All Markets</a>
+			  <a href="javascript:void(0)" onclick="searchByKeyword('grocery')">Grocery Stores</a>
+        <a href="javascript:void(0)" onclick="searchByKeyword('vegetable')">Vegetables</a>
+			  <a href="javascript:void(0)"onclick="clearSearch()">> Clear Results <</a>
+			</div>
+
+      <div id="freshness" style="width:10%;height:60%;margin-left:5%;right:0;">
+      </div>
+
+
+
+
+          </div>
+
+  
+          
+        	<section class="main items" style="float:left;height: auto;width: 100%;margin-left:1px;margin-top: 1em;">
+
+			<div id="marketchart">
+            	<div style="position: absolute;font-family:&quot;Pacifico&quot;, cursive;text-align: center; margin-top:4.7em;margin-left:5.5em;font-size: 28px;">Season<br>Chart</div>
+            </div>
+
+
+				<div id="marketinfo">
+
+					<div id="center">
+						<b>VEGETABLES AND FRUITS AVAILABLE:</b><hr style="margin-top:0em;margin-bottom:0.6em;">
+					</div>
+				</div>
+				<div id="chart_div" style="margin-top:2%;height:30%;width:50%;"></div>
+            
+			</section>
+		</div>
+
+		<!-- Scripts -->
+		<script src="assets/js/jquery.min.js"></script>
+			<script src="assets/js/skel.min.js"></script>
+			<script src="assets/js/util.js"></script>
+			<script src="assets/js/main.js"></script>
+    <script src="https://d3js.org/d3.v4.min.js"></script>
+    <script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
+
+			<script>    
+
+
+
+    var mapStyle = [{"featureType":"landscape","stylers":[{"hue":"#FFBB00"},{"saturation":43.400000000000006},{"lightness":37.599999999999994},{"gamma":1}]},{"featureType":"road.highway","stylers":[{"hue":"#FFC200"},{"saturation":-61.8},{"lightness":45.599999999999994},{"gamma":1}]},{"featureType":"road.arterial","stylers":[{"hue":"#FF0300"},{"saturation":-100},{"lightness":51.19999999999999},{"gamma":1}]},{"featureType":"road.local","stylers":[{"hue":"#FF0300"},{"saturation":-100},{"lightness":52},{"gamma":1}]},{"featureType":"water","stylers":[{"hue":"#0078FF"},{"saturation":-13.200000000000003},{"lightness":2.4000000000000057},{"gamma":1}]},{"featureType":"poi","stylers":[{"hue":"#00FF6A"},{"saturation":-1.0989010989011234},{"lightness":11.200000000000017},{"gamma":1}]}];
+
+    var map;
+    var mapOptions;
+    var service;
+    var infowindow;
+    var searchWord;
+    var markers = [];
+    google.charts.load('current', {packages: ['corechart','gauge']});
+    var freshData = [
+      ['Label', 'Value'],
+      ['Freshness', 80],
+    ];
+    var freshChart = document.getElementById('freshness');
+    var gaugeOptions = {
+      width: 400, height: 120,
+      redFrom: 90, redTo: 100,
+      yellowFrom:75, yellowTo: 90,
+      minorTicks: 5
+    };
+      var colors = ['#87CEFA','#7B68EE','#DDA0DD','#FFC0CB','#FF69B4','#DC143C',];
+      var colorScale = d3.scaleQuantile()
+              .domain([0, 7, 15])
+              .range(colors);
+
+
+    function openNav() {
+	    document.getElementById("mySidenav").style.width = "100%";
+	   }
+
+  	function closeNav() {
+  	    document.getElementById("mySidenav").style.width = "0";
+  	}
+
+    
+    google.charts.setOnLoadCallback(drawBasic);
+    google.charts.setOnLoadCallback(drawFresh);
+
+
+
+
+
+    function initMap() {
+
+        avlbVegies();
+
+        var mapDiv = document.getElementById('map');
+          mapOptions = {
+              center: {lat: 41.86263635, lng: -87.69501013},
+              zoom: 11,
+              styles: mapStyle
+          };
+           map = new google.maps.Map(mapDiv, mapOptions);
+           infowindow = new google.maps.InfoWindow({
+                content:"Hello World!"
+              });
+
+        d3.json("farmers_markets_2015.json",function(marketData){
+
+
+
+
+          for (var i = 0; i < marketData.length; i++) {
+            var lat = marketData[i]["LATITUDE"];
+            var lng = marketData[i]["LONGITUDE"];
+            var latLng = new google.maps.LatLng(lat,lng);
+
+            var marker = new google.maps.Marker({
+              position: latLng,
+              map: map,
+            });
+            marker.set("id", i);
+            
+            google.maps.event.addListener(marker,'click',function() {
+              var mid = this.get("id");//markerid
+              infowindow.setContent("<b><u>"+marketData[mid]["LOCATION"]+"</u></b><br><br>"
+                                          +"Open hours: "+marketData[mid]["START-TIME"]+"~"+marketData[mid]["END-TIME"]+"<br>"
+                                          +"Open dates: "+marketData[mid]["START-DATE"]+"~"+marketData[mid]["END-DATE"]+"<br>"
+                                          +marketData[mid]["INTERSECTION"]+"<br>"
+                                          +"Market type: "+marketData[mid]["TYPE"]+"<br>"
+                                          +"<a href="+marketData[mid]["WEBSITE"]+"> >> Website Link</a>");
+              infowindow.open(map,this);
+
+
+
+              var chart = new google.visualization.Gauge(freshChart);
+              freshData[1][1] = 40 + Math.round(60 * Math.random());
+              chart.draw(google.visualization.arrayToDataTable(freshData),gaugeOptions);
+            });
+          }
+
+
+                    for (var i = 0; i < marketData.length; i++) {
+            var lat = marketData[i]["LATITUDE"];
+            var lng = marketData[i]["LONGITUDE"];
+            var latLng = new google.maps.LatLng(lat,lng);
+
+            var climarker = new google.maps.Marker({
+              position: latLng,
+              map: map,
+              icon: {
+                path: google.maps.SymbolPath.CIRCLE,
+                scale: 15,
+                fillColor: colorScale(Math.random()*20),
+                fillOpacity: 0.2,
+                strokeWeight: 0
+              }
+            });
+
+          }
+
+
+        });
+
+
+        service = new google.maps.places.PlacesService(map);
+
+
+
+
+        //Search box
+        var input = document.getElementById('pac-input');
+  		  var searchBox = new google.maps.places.SearchBox(input);
+  		  //map.controls[google.maps.ControlPosition.TOP_LEFT].push(input);
+
+  		  // Bias the SearchBox results towards current map's viewport.
+  		  map.addListener('bounds_changed', function() {
+  		    searchBox.setBounds(map.getBounds());
+  		  });
+
+  		  searchBox.addListener('places_changed', function() {
+  			var places = searchBox.getPlaces();
+
+  			if (places.length == 0) {
+  			  return;
+  			}
+
+  			// Clear out the old markers.
+  			markers.forEach(function(marker) {
+  			  marker.setMap(null);
+  			});
+  			markers = [];
+
+  			// For each place, get the icon, name and location.
+  			var bounds = new google.maps.LatLngBounds();
+    			places.forEach(function(place) {
+    			  if (!place.geometry) {
+    			    console.log("Returned place contains no geometry");
+    			    return;
+    			  }
+    			  var icon = {
+    			    url: place.icon,
+    			    size: new google.maps.Size(71, 71),
+    			    origin: new google.maps.Point(0, 0),
+    			    anchor: new google.maps.Point(17, 34),
+    			    scaledSize: new google.maps.Size(25, 25)
+    			  };
+
+    			  // Create a marker for each place.
+      			var marker = new google.maps.Marker({
+      	          map: map,
+      			    icon: icon,
+      			    title: place.name,
+      			    position: place.geometry.location
+      	     });
+    	        
+            google.maps.event.addListener(marker, 'click', function() {
+    	          service.getDetails(place, function(result, status) {
+    	           if (status !== google.maps.places.PlacesServiceStatus.OK) {
+    	              console.error(status);
+    	              return;
+    	            }
+    	            infowindow.setContent(result.name);
+    	            infowindow.open(map, marker);
+    	          });
+    	        });
+
+    	     markers.push(marker);
+
+      			  if (place.geometry.viewport) {
+      			    // Only geocodes have viewport.
+      			    bounds.union(place.geometry.viewport);
+      			    console.log(place.geometry.viewport)
+      			  } else {
+      			    bounds.extend(place.geometry.location);
+      			  }
+
+    			});
+  			   map.fitBounds(bounds);
+  	   });
+
+
+
+
+      //add heatmap
+
+
+
+      var script = document.createElement('script');
+        script.setAttribute(
+            'src',
+            'https://storage.googleapis.com/mapsdevsite/json/quakes.geo.json');
+        document.getElementsByTagName('head')[0].appendChild(script);
+
+        // Add a basic style.        
+        map.data.setStyle(function(feature) {
+          var mag = Math.exp(parseFloat(feature.getProperty('mag'))) * 0.1;
+          
+          return /** @type {google.maps.Data.StyleOptions} */({
+            icon: {
+              path: google.maps.SymbolPath.CIRCLE,
+              scale: 9,
+              fillColor: colorScale(mag),
+              fillOpacity: 0.3,
+              strokeWeight: 0
+            }
+          });
+        });
+
+
+
+		  
+  }
+
+
+    function eqfeed_callback(data) {
+      map.data.addGeoJson(data);
+    }
+
+
+
+    function getCurrentLoc(){
+    	//my location
+		  if (navigator.geolocation) {
+          navigator.geolocation.getCurrentPosition(function(position) {
+            var pos = {
+              lat: position.coords.latitude,
+              lng: position.coords.longitude
+            };
+
+            infowindow.setPosition(pos);
+            infowindow.setContent('Location found.');
+            map.setCenter(pos);
+
+            //console.log(pos)
+
+            var marker = new google.maps.Marker({
+	          map: map,
+	          position: pos,
+	          icon: {
+	            url: 'images/currentLoc.png',
+	            anchor: new google.maps.Point(10, 10),
+	            scaledSize: new google.maps.Size(30, 30)
+	          }
+	        });
+
+	        google.maps.event.addListener(marker, 'click', function() {
+	          service.getDetails(place, function(result, status) {
+	            if (status !== google.maps.places.PlacesServiceStatus.OK) {
+	              console.error(status);
+	              return;
+	            }
+	            infowindow.setContent("My current Location");
+	            infowindow.open(map, marker);
+	          });
+	        });
+
+	        infowindow.setContent("My current Location");
+	        infowindow.open(map, marker);
+
+
+          }, function() {
+            handleLocationError(true, infowindow, map.getCenter());
+          });
+        } else {
+          // Browser doesn't support Geolocation
+          handleLocationError(false, infowindow, map.getCenter());
+        }
+
+        
+    }
+
+    function handleLocationError(browserHasGeolocation, infowindow, pos) {
+        infowindow.setPosition(pos);
+        infowindow.setContent(browserHasGeolocation ?
+                              'Error: The Geolocation service failed.' :
+                              'Error: Your browser doesn\'t support geolocation.');
+      }
+
+
+
+   	function performSearch() {
+   		if(searchWord != null){
+	        var request = {
+	          bounds: map.getBounds(),
+	          keyword: searchWord
+	        };
+	        service.radarSearch(request, callback);
+	     }
+      }
+
+      function callback(results, status) {
+        if (status !== google.maps.places.PlacesServiceStatus.OK) {
+          console.error(status);
+          return;
+        }
+        for (var i = 0, result; result = results[i]; i++) {
+          addMarker(result);
+        }
+      }
+      
+    function addMarker(place) {
+        var marker = new google.maps.Marker({
+          map: map,
+          position: place.geometry.location,
+          icon: {
+            url: 'http://maps.gstatic.com/mapfiles/circle.png',
+            anchor: new google.maps.Point(10, 10),
+            scaledSize: new google.maps.Size(10, 17)
+          }
+        });
+        google.maps.event.addListener(marker, 'click', function() {
+          service.getDetails(place, function(result, status) {
+            if (status !== google.maps.places.PlacesServiceStatus.OK) {
+              console.error(status);
+              return;
+            }
+            infowindow.setContent(result.name);
+            infowindow.open(map, marker);
+          });
+        });
+        markers.push(marker);
+    }
+
+	function searchByKeyword(currentWord){
+		searchWord = currentWord;
+		map.addListener('idle', performSearch);
+		service = new google.maps.places.PlacesService(map);
+		var request = {
+          bounds: map.getBounds(),
+          keyword: searchWord
+        };
+        service.radarSearch(request, callback);
+
+	}
+
+	function clearSearch(){
+		for (var i = 0; i < markers.length; i++) {
+          markers[i].setMap(null);
+        }
+        markers = [];
+        searchWord = null;
+	}
+
+
+      var width = 800;
+      var height = 360;
+      var radius = Math.min(width, height) / 2.2;
+      var donutWidth = 75;                            // NEW
+
+      var color = d3.scaleOrdinal(d3.schemeCategory20b);
+
+      var svg = d3.select('#marketchart')
+        .append('svg')
+        .attr('width', width)
+        .attr('height', height)
+        .append('g')
+        .attr('transform', 'translate(' + (width / 4) + 
+          ',' + (height / 2) + ')');
+
+      var dataset = [
+          { label: 'January', count: 1 }, 
+          { label: 'February', count: 1 },
+          { label: 'March', count: 1 },
+          { label: 'April', count: 1 },
+          { label: 'May', count: 1 },
+          { label: 'June', count: 1 },
+          { label: 'July', count: 1 },
+          { label: 'August', count: 1 },
+          { label: 'September', count: 1 },
+          { label: 'October', count: 1 },
+          { label: 'November', count: 1 },
+          { label: 'December', count: 1 }
+        ];
+      
+    function avlbVegies(){
+
+        var arc = d3.arc()
+          .innerRadius(radius - donutWidth)             // NEW
+          .outerRadius(radius);
+
+        var arcOver = d3.arc()
+          .innerRadius(radius - donutWidth)             // NEW
+          .outerRadius(radius+20);
+
+        var pie = d3.pie()
+          .value(function(d) { return d.count; })
+          .sort(null);
+
+        var months = svg.selectAll("g.months") 
+            .data(pie(dataset))
+            .enter()
+            .append("g")
+            .attr("class", "months")
+            .attr("id",function(d){return d.label;}); 
+
+        months.append("path")
+            .attr("d", arc)
+            .attr('fill', function(d, i) { 
+              return color(d.data.label);
+            })
+            .on("mouseover",function(d){
+              d3.select(this).transition()
+                .duration(100)
+                .attr("d", arcOver);
+              var month = d3.select(this.parentNode.childNodes[1]).text();
+              mouseoverMonth(month);
+            })
+            .on("mouseout",function(d){
+              d3.select(this).transition()
+                .duration(100)
+                .attr("d", arc);
+            });
+        months.append("text")
+            .attr("transform", function(d) { return "translate(" + arc.centroid(d) + ")"; })
+            .attr("dx", "-1.9em")
+            //.attr("dy", ".35em")
+            .text(function(d) { return d.data.label; })
+            .style("fill","white")
+            .on("mouseover",function(d){
+              d3.select(this.parentNode.childNodes[0]).transition()
+                .duration(100)
+                .attr("d", arcOver);
+            })
+            .on("mouseout",function(d){
+              d3.select(this.parentNode.childNodes[0]).transition()
+                .duration(100)
+                .attr("d", arc);
+            });
+    }
+
+
+    function mouseoverMonth(selectMonth){
+        d3.json("seasonal_chart.json",function(seasonData){
+          var produceList = [];
+          var noContent = true;
+          seasonData.forEach(function(d) {
+            if (d[selectMonth.toString()] == "Y"){ 
+              produceList.push(d.Name);
+              noContent=false;
+            }
+          });
+          if (noContent){
+            produceList.push("No vegetables available :(");
+          }
+          d3.selectAll(".produces").remove();
+
+          var marketinfo = document.getElementById("center");
+          marketinfo.innerHTML = "<b>VEGETABLES AND FRUITS AVAILABLE:</b><hr style=\"margin-top:0em;margin-bottom:0.6em;\">"+produceList;
+
+        });
+    }
+
+    function getClimate(){
+    }
+
+    function drawBasic() {
+
+      var data = new google.visualization.DataTable();
+      data.addColumn('number', 'X');
+      data.addColumn('number', 'vegetable price changing rate (%)');
+
+      data.addRows([
+        [1974,7.3],[1975,-1.1],[1976,4.3],[1977,12.6],[1978,8.0],[1979,3.0],[1980,8.8],[1981,18.6],[1982,0.5],[1983,3.6],[1984,10.9],[1985,-4.3],[1986,4.1],[1987,12.9],[1988,6.3],[1989,10.7],[1990,5.6],[1991,2.2],[1992,2.3],[1993,6.6],[1994,2.3],[1995,12.1],[1996,-2.0],[1997,2.9],[1998,10.9],[1999,-3.0],[2000,4.8],[2001,5.1],[2002,6.4],[2003,2.1],[2004,4.3],[2005,4.0],[2006,4.6],[2007,3.2],[2008,5.6],[2009,-3.4],[2010,2.0],[2011,5.6],[2012,-5.1],[2013,4.7],[2014,-1.3],[2015,1.6]
+      ]);
+
+      var options = {
+        hAxis: {
+          title: 'Year'
+        },
+        vAxis: {
+          title: 'increasing/decreasing rate'
+        }
+      };
+
+      var chart = new google.visualization.LineChart(document.getElementById('chart_div'));
+
+      chart.draw(data, options);
+    }
+
+
+    function drawFresh() {
+      console.log(freshData)
+      data = google.visualization.arrayToDataTable(freshData);
+
+
+
+      var chart = new google.visualization.Gauge(freshChart);
+
+      chart.draw(data, gaugeOptions);
+      
+    }
+/*
+    function drawBasic() {
+
+      var data = new google.visualization.DataTable();
+      data.addColumn('number', 'Fruit');
+      data.addColumn('number', 'vegetable price changing rate');
+
+      data.addRows([
+[1974,7.3],[1975,-1.1],[1976,4.3],[1977,12.6],[1978,8.0],[1979,3.0],[1980,8.8],[1981,18.6],[1982,0.5],[1983,3.6],[1984,10.9],[1985,-4.3],[1986,4.1],[1987,12.9],[1988,6.3],[1989,10.7],[1990,5.6],[1991,2.2],[1992,2.3],[1993,6.6],[1994,2.3],[1995,12.1],[1996,-2.0],[1997,2.9],[1998,10.9],[1999,-3.0],[2000,4.8],[2001,5.1],[2002,6.4],[2003,2.1],[2004,4.3],[2005,4.0],[2006,4.6],[2007,3.2],[2008,5.6],[2009,-3.4],[2010,2.0],[2011,5.6],[2012,-5.1],[2013,4.7],[2014,-1.3],[2015,1.6]
+      ]);
+
+      var options = {
+        hAxis: {
+          title: 'Year'
+        },
+        vAxis: {
+          title: 'increasing/decreasing rate'
+        }
+      };
+
+      var chart = new google.visualization.LineChart(document.getElementById('chart_div'));
+
+      chart.draw(data, options);
+    }*/
+
+
+    </script>
+
+    <script async defer
+        src="https://maps.googleapis.com/maps/api/js?key=AIzaSyDmtA-nqG5dEA91qO16GzOC0B5FAxpTSe0&callback=initMap&libraries=places,visualization">
+    </script>
+
+	</body>
+</html>
